@@ -1,52 +1,57 @@
-﻿function convert2gaode(_) {
+﻿/**
+ * 把wgs84的geojson转换成gcj坐标的geojson
+ * @param {} _ 
+ * @returns {} 
+ */
+function wgs2gcj(_) {
     var geojson = clone(_);
     switch (geojson.type) {
     case 'FeatureCollection':
         switch (geojson.features[0].geometry.type) {
         case 'Point':
             geojson.features.map(function(feature) {
-                convert2gaodePoint(feature.geometry);
+                wgs2gcjPoint(feature.geometry);
             });
             return geojson;
         case 'LineString':
         case 'MultiPoint':
             geojson.features.map(function(feature) {
-                convert2gaodeLine(feature.geometry);
+                wgs2gcjLine(feature.geometry);
             });
             return geojson;
         case 'Polygon':
         case 'MultiLineString':
             geojson.features.map(function(feature) {
-                convert2gaodePoly(feature.geometry);
+                wgs2gcjPoly(feature.geometry);
             });
             return geojson;
         case 'MultiPolygon':
             geojson.features.map(function(feature) {
-                convert2gaodeMultiPoly(feature.geometry);
+                wgs2gcjMultiPoly(feature.geometry);
             });
             return geojson;
         }
     case 'Point':
-        return convert2gaodePoint(geojson);
+        return wgs2gcjPoint(geojson);
     case 'LineString':
     case 'MultiPoint':
-        return convert2gaodeLine(geojson);
+        return wgs2gcjLine(geojson);
     case 'Polygon':
     case 'MultiLineString':
-        return convert2gaodePoly(geojson);
+        return wgs2gcjPoly(geojson);
     case 'MultiPolygon':
-        return convert2gaodeMultiPoly(geojson);
+        return wgs2gcjMultiPoly(geojson);
     }
 }
 
-function convert2gaodePoint(point) {
+function wgs2gcjPoint(point) {
     var coord = point.coordinates;
     var gcj = coordtransform.wgs84togcj02(coord[0], coord[1]);
     coord[0] = gcj[0];
     coord[1] = gcj[1];
 }
 
-function convert2gaodeLine(line) {
+function wgs2gcjLine(line) {
     line.Coordinates.map(function(coord) {
         var gcj = coordtransform.wgs84togcj02(coord[0], coord[1]);
         coord[0] = gcj[0];
@@ -54,7 +59,7 @@ function convert2gaodeLine(line) {
     });
 }
 
-function convert2gaodePoly(poly) {
+function wgs2gcjPoly(poly) {
     poly.coordinates.map(function(ring) {
         ring.map(function(coord) {
             var gcj = coordtransform.wgs84togcj02(coord[0], coord[1]);
@@ -64,7 +69,7 @@ function convert2gaodePoly(poly) {
     });
 }
 
-function convert2gaodeMultiPoly(multiPoly) {
+function wgs2gcjMultiPoly(multiPoly) {
     multiPoly.coordinates.map(function(poly) {
         poly.map(function(ring) {
             ring.map(function(coord) {
